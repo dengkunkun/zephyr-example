@@ -1,0 +1,15 @@
+identifier: f411ceu6
+name: WeAct STM32F411CEU6 (CMSIS-DAP)
+type: mcu
+arch: arm
+toolchain:
+  - zephyr
+  - gnuarmemb
+supported:
+  - counter
+  - spi
+  - i2c
+  - uart
+  - pwm
+  - adc
+vendor: weact

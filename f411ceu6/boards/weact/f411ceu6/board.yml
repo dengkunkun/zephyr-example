@@ -1,0 +1,6 @@
+board:
+  name: f411ceu6
+  full_name: WeAct STM32F411CEU6 (CMSIS-DAP)
+  vendor: weact
+  socs:
+    - name: stm32f411xe
