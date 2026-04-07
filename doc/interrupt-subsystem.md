@@ -544,3 +544,19 @@ Zephyr 的中断系统可以概括为：
 - 最后结合 `irq.h` 与 `irq_manage.c`，理解 Zephyr 如何把中断抽象成统一框架
 
 掌握这一层后，再读 GPIO、定时器、低功耗子系统时，会轻松很多，因为它们本质上都要借助这套中断骨架来完成异步事件处理。
+
+# 调用栈实例
+sample: button_interrupt
+~~~
+#0  k_cycle_get_32 () at /home/firebot/zephyrproject/zephyr/include/zephyr/kernel.h:2221
+#1  button_pressed (dev=0x8003004 <__device_dts_ord_38>, cb=0x200001c0 <button_cb_data>, pins=1) at /home/firebot/zephyrproject/zephyr-example/f411ceu6/button_interrupt/src/main.c:38
+#2  0x08002b9c in gpio_fire_callbacks (list=<optimized out>, port=0x8003004 <__device_dts_ord_38>, pins=1) at /home/firebot/zephyrproject/zephyr/include/zephyr/drivers/gpio/gpio_utils.h:139
+#3  gpio_stm32_isr (pin=1, arg=0x8003004 <__device_dts_ord_38>) at /home/firebot/zephyrproject/zephyr/drivers/gpio/gpio_stm32.c:49
+#4  0x08000ea2 in stm32_intc_gpio_isr (exti_range=0x80039aa <line_range_0>) at /home/firebot/zephyrproject/zephyr/drivers/interrupt_controller/intc_gpio_stm32.c:132
+#5  0x08000d9e in _isr_wrapper () at /home/firebot/zephyrproject/zephyr/arch/arm/core/cortex_m/isr_wrapper.c:80
+#6  <signal handler called>
+#7  0x0800284e in arch_cpu_idle () at /home/firebot/zephyrproject/zephyr/arch/arm/core/cortex_m/cpu_idle.c:106
+#8  0x08002c1a in k_cpu_idle () at /home/firebot/zephyrproject/zephyr/include/zephyr/kernel.h:6807
+#9  idle (unused1=<optimized out>, unused2=<optimized out>, unused3=<optimized out>) at /home/firebot/zephyrproject/zephyr/kernel/idle.c:75
+#10 0x08000612 in z_thread_entry (entry=0x8002c07 <idle>, p1=0x200002e4 <_kernel>, p2=0x0, p3=0x0) at /home/firebot/zephyrproject/zephyr/lib/os/thread_entry.c:60
+~~~
