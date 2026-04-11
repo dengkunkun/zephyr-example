@@ -1,0 +1,106 @@
+/*
+ * SPDX-License-Identifier: Apache-2.0
+ *
+ * HC32F460 SoC devicetree include
+ *
+ * Memory map:
+ *   Flash: 0x00000000, 512K
+ *   SRAM:  0x1FFF8000, 192K (188K general + 4K ret_ram)
+ */
+
+#include <arm/armv7-m.dtsi>
+#include <zephyr/dt-bindings/gpio/gpio.h>
+#include <mem.h>
+
+/ {
+	compatible = "hdsc,hc32f460";
+
+	chosen {
+		zephyr,flash-controller = &flash_controller;
+	};
+
+	cpus {
+		#address-cells = <1>;
+		#size-cells = <0>;
+		cpu0: cpu@0 {
+			device_type = "cpu";
+			compatible = "arm,cortex-m4f";
+			reg = <0>;
+			clock-frequency = <8000000>; /* MRC 8 MHz default */
+		};
+	};
+
+	sram0: memory@1fff8000 {
+		compatible = "mmio-sram";
+		reg = <0x1FFF8000 DT_SIZE_K(192)>;
+	};
+
+	soc {
+		flash_controller: flash-controller@40010400 {
+			compatible = "hdsc,hc32-flash-controller";
+			reg = <0x40010400 0x400>;
+			#address-cells = <1>;
+			#size-cells = <1>;
+
+			flash0: flash@0 {
+				compatible = "soc-nv-flash";
+				reg = <0x00000000 DT_SIZE_K(512)>;
+			};
+		};
+
+		gpioa: gpio@40053801 {
+			compatible = "hdsc,hc32-gpio";
+			reg = <0x40053800 0x800>;
+			gpio-controller;
+			#gpio-cells = <2>;
+			port-index = <0>;  /* Port A */
+			status = "disabled";
+		};
+
+		gpiob: gpio@40053802 {
+			compatible = "hdsc,hc32-gpio";
+			reg = <0x40053800 0x800>;
+			gpio-controller;
+			#gpio-cells = <2>;
+			port-index = <1>;  /* Port B */
+			status = "disabled";
+		};
+
+		gpioc: gpio@40053803 {
+			compatible = "hdsc,hc32-gpio";
+			reg = <0x40053800 0x800>;
+			gpio-controller;
+			#gpio-cells = <2>;
+			port-index = <2>;  /* Port C */
+			status = "disabled";
+		};
+
+		gpiod: gpio@40053804 {
+			compatible = "hdsc,hc32-gpio";
+			reg = <0x40053800 0x800>;
+			gpio-controller;
+			#gpio-cells = <2>;
+			port-index = <3>;  /* Port D */
+			status = "disabled";
+		};
+
+		gpioe: gpio@40053805 {
+			compatible = "hdsc,hc32-gpio";
+			reg = <0x40053800 0x800>;
+			gpio-controller;
+			#gpio-cells = <2>;
+			port-index = <4>;  /* Port E */
+			status = "disabled";
+		};
+
+		usart2: serial@4001d400 {
+			compatible = "hdsc,hc32-usart";
+			reg = <0x4001D400 0x400>;
+			status = "disabled";
+		};
+	};
+};
+
+&nvic {
+	arm,num-irq-priority-bits = <4>;
+};

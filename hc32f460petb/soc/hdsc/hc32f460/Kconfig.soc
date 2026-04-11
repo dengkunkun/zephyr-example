@@ -1,0 +1,25 @@
+# SPDX-License-Identifier: Apache-2.0
+# HC32F460 SoC family
+
+config SOC_FAMILY_HC32
+	bool
+
+config SOC_FAMILY
+	default "hc32" if SOC_FAMILY_HC32
+
+config SOC_HC32F460
+	bool
+	select SOC_FAMILY_HC32
+	select ARM
+	select CPU_CORTEX_M4
+	select CPU_CORTEX_M_HAS_DWT
+	select CPU_HAS_FPU
+	select CPU_HAS_ARM_MPU
+	select SOC_EARLY_INIT_HOOK
+	select HAS_SWO
+
+config SOC_SERIES
+	default "hc32f460" if SOC_HC32F460
+
+config SOC
+	default "hc32f460" if SOC_HC32F460

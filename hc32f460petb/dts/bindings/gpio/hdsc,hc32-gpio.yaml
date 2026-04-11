@@ -1,0 +1,24 @@
+# SPDX-License-Identifier: Apache-2.0
+
+description: HC32F460 GPIO controller
+
+compatible: "hdsc,hc32-gpio"
+
+include: [gpio-controller.yaml, base.yaml]
+
+properties:
+  reg:
+    required: true
+
+  port-index:
+    type: int
+    required: true
+    description: |
+      GPIO port index: 0=A, 1=B, 2=C, 3=D, 4=E, etc.
+
+  "#gpio-cells":
+    const: 2
+
+gpio-cells:
+  - pin
+  - flags

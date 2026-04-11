@@ -1,0 +1,9 @@
+# SPDX-License-Identifier: Apache-2.0
+
+config UART_HC32
+	bool "HC32F460 USART driver"
+	default y
+	depends on DT_HAS_HDSC_HC32_USART_ENABLED
+	select SERIAL_HAS_DRIVER
+	help
+	  UART polling driver for HC32F460 USART peripheral.

@@ -1,0 +1,7 @@
+# SPDX-License-Identifier: Apache-2.0
+
+config SOC_FAMILY_HC32
+	select BUILD_OUTPUT_HEX
+
+# Source out-of-tree driver Kconfig files
+rsource "../../../drivers/Kconfig"

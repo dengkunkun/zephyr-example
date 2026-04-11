@@ -1,0 +1,17 @@
+# SPDX-License-Identifier: Apache-2.0
+
+description: HC32F460 flash controller
+
+compatible: "hdsc,hc32-flash-controller"
+
+include: base.yaml
+
+properties:
+  reg:
+    required: true
+
+  "#address-cells":
+    required: true
+
+  "#size-cells":
+    required: true

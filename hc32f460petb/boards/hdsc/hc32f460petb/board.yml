@@ -1,0 +1,6 @@
+board:
+  name: hc32f460petb
+  full_name: HC32F460PETB Custom Board
+  vendor: hdsc
+  socs:
+    - name: hc32f460

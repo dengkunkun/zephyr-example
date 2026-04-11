@@ -1,0 +1,4 @@
+family:
+- name: hc32
+  socs:
+  - name: hc32f460

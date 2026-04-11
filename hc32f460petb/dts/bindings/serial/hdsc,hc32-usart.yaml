@@ -1,0 +1,11 @@
+# SPDX-License-Identifier: Apache-2.0
+
+description: HC32F460 USART peripheral
+
+compatible: "hdsc,hc32-usart"
+
+include: uart-controller.yaml
+
+properties:
+  reg:
+    required: true
