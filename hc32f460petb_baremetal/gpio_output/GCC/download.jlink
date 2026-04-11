@@ -1,0 +1,6 @@
+r
+h
+loadfile ..\Debug\gpio_output.hex
+r
+g
+q
