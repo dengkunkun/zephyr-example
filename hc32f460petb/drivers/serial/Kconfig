@@ -6,4 +6,29 @@ config UART_HC32
 	depends on DT_HAS_HDSC_HC32_USART_ENABLED
 	select SERIAL_HAS_DRIVER
 	help
-	  UART polling driver for HC32F460 USART peripheral.
+	  UART driver for HC32F460 USART peripheral.
+	  Supports polling mode by default. Enable UART_HC32_INTERRUPT
+	  for interrupt-driven operation (required by shell).
+
+config UART_HC32_INTERRUPT
+	bool "HC32F460 USART interrupt support"
+	depends on UART_HC32
+	select SERIAL_SUPPORT_INTERRUPT
+	select UART_INTERRUPT_DRIVEN
+	select DYNAMIC_INTERRUPTS
+	help
+	  Enable interrupt-driven UART for HC32F460.
+	  Uses INTC SEL registers to map USART interrupt sources
+	  (RX full, RX error, TX empty, TX complete) to NVIC IRQs.
+
+config UART_HC32_DMA
+	bool "HC32F460 USART DMA support"
+	depends on UART_HC32
+	depends on !UART_HC32_INTERRUPT
+	select SERIAL_SUPPORT_ASYNC
+	select UART_ASYNC_API
+	select DYNAMIC_INTERRUPTS
+	help
+	  Enable DMA-based async UART for HC32F460 USART.
+	  Uses DMA1 for RX and DMA2 for TX, triggered by USART
+	  events via AOS.  Mutually exclusive with interrupt mode.
