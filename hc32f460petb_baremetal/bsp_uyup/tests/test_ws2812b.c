@@ -2,43 +2,43 @@
  *******************************************************************************
  * @file  test_ws2812b.c
  * @brief WS2812B RGB LED test for UYUP board.
- *        Data pin PB1, chain of 2 LEDs, bit-bang via GPIO.
+ *        Data pin PB1, chain of 2 LEDs.
+ *        Uses DWT cycle counter for precise sub-µs timing and direct GPIO
+ *        register writes for minimal latency.
  *******************************************************************************
  */
 #include "bsp_uyup.h"
 #include "test_all.h"
 
 /*
- * WS2812B timing (at 200 MHz HCLK):
- *   T0H = 0.4us → 80 cycles
- *   T0L = 0.85us → 170 cycles
- *   T1H = 0.8us → 160 cycles
- *   T1L = 0.45us → 90 cycles
- *   Reset > 50us → 10000 cycles
+ * WS2812B timing (800 kHz, 1.25 µs per bit):
+ *   T0H = 0.40 µs  (tolerance ±150 ns)
+ *   T0L = 0.85 µs
+ *   T1H = 0.80 µs
+ *   T1L = 0.45 µs
+ *   Reset >= 50 µs
  *
- * Using bit-bang GPIO for simplicity. DMA+Timer would be more robust.
+ * At HCLK = 200 MHz (5 ns/cycle):
+ *   T0H = 80 cycles,  T0L = 170 cycles
+ *   T1H = 160 cycles, T1L = 90 cycles
  */
 
-/* Inline delay in CPU cycles (approximate) */
-static void delay_cycles(volatile uint32_t n)
-{
-    while (n--) {
-        __NOP();
-    }
-}
+#define WS_T0H_CYC   (80U)
+#define WS_T0L_CYC   (170U)
+#define WS_T1H_CYC   (160U)
+#define WS_T1L_CYC   (90U)
 
-static void WS2812_SendBit(uint8_t bit)
+/* Direct register writes: PB1 = bit 1 of port B */
+#define WS_PIN_MASK   (1U << 1)
+#define WS_HIGH()     (CM_GPIO->POSRB = WS_PIN_MASK)
+#define WS_LOW()      (CM_GPIO->PORRB = WS_PIN_MASK)
+
+/* DWT cycle counter wait — cycle-accurate (±1 cycle = 5 ns) */
+static inline void ws_wait(uint32_t cyc)
 {
-    if (bit) {
-        GPIO_SetPins(BSP_WS2812_PORT, BSP_WS2812_PIN);
-        delay_cycles(30U);   /* T1H ~0.8us */
-        GPIO_ResetPins(BSP_WS2812_PORT, BSP_WS2812_PIN);
-        delay_cycles(10U);   /* T1L ~0.45us */
-    } else {
-        GPIO_SetPins(BSP_WS2812_PORT, BSP_WS2812_PIN);
-        delay_cycles(10U);   /* T0H ~0.4us */
-        GPIO_ResetPins(BSP_WS2812_PORT, BSP_WS2812_PIN);
-        delay_cycles(30U);   /* T0L ~0.85us */
+    uint32_t start = DWT->CYCCNT;
+    while ((DWT->CYCCNT - start) < cyc) {
+        /* spin */
     }
 }
 
@@ -46,7 +46,17 @@ static void WS2812_SendByte(uint8_t byte)
 {
     uint8_t i;
     for (i = 0U; i < 8U; i++) {
-        WS2812_SendBit(byte & 0x80U);
+        if (byte & 0x80U) {
+            WS_HIGH();
+            ws_wait(WS_T1H_CYC);
+            WS_LOW();
+            ws_wait(WS_T1L_CYC);
+        } else {
+            WS_HIGH();
+            ws_wait(WS_T0H_CYC);
+            WS_LOW();
+            ws_wait(WS_T0L_CYC);
+        }
         byte <<= 1U;
     }
 }
@@ -61,8 +71,8 @@ static void WS2812_SendColor(uint8_t r, uint8_t g, uint8_t b)
 
 static void WS2812_Reset(void)
 {
-    GPIO_ResetPins(BSP_WS2812_PORT, BSP_WS2812_PIN);
-    BSP_DelayUS(80UL);   /* >50us reset */
+    WS_LOW();
+    DDL_DelayUS(80UL);  /* >50 µs reset */
 }
 
 void test_ws2812b(void)
@@ -83,16 +93,24 @@ void test_ws2812b(void)
 
     LL_PERIPH_WP(BSP_LL_PERIPH_SEL);
 
-    /* Cycle through Red → Green → Blue → White → Off */
+    /* Enable DWT cycle counter */
+    CoreDebug->DEMCR |= CoreDebug_DEMCR_TRCENA_Msk;
+    DWT->CYCCNT = 0U;
+    DWT->CTRL |= DWT_CTRL_CYCCNTENA_Msk;
+
+    /* Brightness capped at 32 to avoid blinding */
     static const uint8_t colors[][3] = {
-        {255, 0, 0},       /* Red */
-        {0, 255, 0},       /* Green */
-        {0, 0, 255},       /* Blue */
-        {255, 255, 255},   /* White */
-        {0, 0, 0},         /* Off */
+        { 32,   0,   0},   /* Red */
+        {  0,  32,   0},   /* Green */
+        {  0,   0,  32},   /* Blue */
+        { 32,  32,   0},   /* Yellow */
+        {  0,  32,  32},   /* Cyan */
+        { 32,   0,  32},   /* Magenta */
+        { 32,  32,  32},   /* White (dim) */
+        {  0,   0,   0},   /* Off */
     };
 
-    for (i = 0U; i < 5U; i++) {
+    for (i = 0U; i < 8U; i++) {
         __disable_irq();
         WS2812_SendColor(colors[i][0], colors[i][1], colors[i][2]);
         WS2812_SendColor(colors[i][0], colors[i][1], colors[i][2]);
@@ -101,7 +119,8 @@ void test_ws2812b(void)
 
         BSP_UART_Printf("  Color: R=%u G=%u B=%u\r\n",
                          colors[i][0], colors[i][1], colors[i][2]);
-        BSP_DelayMS(500UL);
+        BSP_WDT_Feed();
+        BSP_DelayMS(800UL);
     }
 
     BSP_UART_Printf("[PASS] WS2812B\r\n");
