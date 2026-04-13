@@ -24,12 +24,15 @@ add_compile_definitions(
     __DEBUG
     HC32F460
     USE_DDL_DRIVER
+    XTAL_VALUE=24000000UL
+    XTAL32_VALUE=32768UL
 )
 
 # ── Include paths ────────────────────────────────────────────────────────────
 include_directories(
     ${CMAKE_CURRENT_SOURCE_DIR}/source
     ${CMAKE_CURRENT_SOURCE_DIR}/drivers
+    ${CMAKE_CURRENT_SOURCE_DIR}/tests
     ${CMSIS_DIR}/Device/HDSC/hc32f4xx/Include
     ${LL_DIR}/inc
     ${CMSIS_DIR}/Include
@@ -110,28 +113,26 @@ set(LL_SOURCES
     ${LL_DIR}/src/hc32_ll_sram.c
     ${LL_DIR}/src/hc32_ll_usart.c
     ${LL_DIR}/src/hc32_ll_utility.c
-    # Additional drivers enabled as peripherals are added:
+    # Peripheral drivers for all enabled modules:
     ${LL_DIR}/src/hc32_ll_adc.c
-    # ${LL_DIR}/src/hc32_ll_aes.c
+    ${LL_DIR}/src/hc32_ll_aes.c
     ${LL_DIR}/src/hc32_ll_aos.c
-    # ${LL_DIR}/src/hc32_ll_can.c
-    # ${LL_DIR}/src/hc32_ll_cmp.c
-    # ${LL_DIR}/src/hc32_ll_crc.c
+    ${LL_DIR}/src/hc32_ll_can.c
+    ${LL_DIR}/src/hc32_ll_crc.c
+    ${LL_DIR}/src/hc32_ll_dcu.c
     ${LL_DIR}/src/hc32_ll_dma.c
-    # ${LL_DIR}/src/hc32_ll_hash.c
-    # ${LL_DIR}/src/hc32_ll_i2c.c
+    ${LL_DIR}/src/hc32_ll_hash.c
+    ${LL_DIR}/src/hc32_ll_i2c.c
     ${LL_DIR}/src/hc32_ll_ots.c
-    # ${LL_DIR}/src/hc32_ll_rtc.c
-    # ${LL_DIR}/src/hc32_ll_spi.c
+    ${LL_DIR}/src/hc32_ll_rmu.c
+    ${LL_DIR}/src/hc32_ll_rtc.c
+    ${LL_DIR}/src/hc32_ll_sdioc.c
+    ${LL_DIR}/src/hc32_ll_spi.c
     ${LL_DIR}/src/hc32_ll_tmr0.c
-    # ${LL_DIR}/src/hc32_ll_tmr4.c
-    # ${LL_DIR}/src/hc32_ll_tmr6.c
-    # ${LL_DIR}/src/hc32_ll_tmra.c
-    # ${LL_DIR}/src/hc32_ll_trng.c
-    # ${LL_DIR}/src/hc32_ll_wdt.c
-    # ${LL_DIR}/src/hc32_ll_sdioc.c
-    # ${LL_DIR}/src/hc32_ll_usb.c
-    # ${LL_DIR}/src/hc32f460_ll_interrupts_share.c
+    ${LL_DIR}/src/hc32_ll_tmr4.c
+    ${LL_DIR}/src/hc32_ll_trng.c
+    ${LL_DIR}/src/hc32_ll_wdt.c
+    ${LL_DIR}/src/hc32f460_ll_interrupts_share.c
 )
 
 # Picolibc stub (Zephyr SDK only)
