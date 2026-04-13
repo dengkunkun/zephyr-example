@@ -71,7 +71,7 @@ extern "C" {
  *==========================================================================*/
 #define BSP_WS2812_PORT             (GPIO_PORT_B)
 #define BSP_WS2812_PIN              (GPIO_PIN_01)
-#define BSP_WS2812_TMR_FUNC         (GPIO_FUNC_2)
+#define BSP_WS2812_TMR_FUNC         (GPIO_FUNC_5)
 #define BSP_WS2812_LED_COUNT        (2U)
 
 /*============================================================================

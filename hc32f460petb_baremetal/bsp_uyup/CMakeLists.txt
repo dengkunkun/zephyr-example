@@ -130,6 +130,7 @@ set(LL_SOURCES
     ${LL_DIR}/src/hc32_ll_spi.c
     ${LL_DIR}/src/hc32_ll_tmr0.c
     ${LL_DIR}/src/hc32_ll_tmr4.c
+    ${LL_DIR}/src/hc32_ll_tmra.c
     ${LL_DIR}/src/hc32_ll_trng.c
     ${LL_DIR}/src/hc32_ll_wdt.c
     ${LL_DIR}/src/hc32f460_ll_interrupts_share.c
