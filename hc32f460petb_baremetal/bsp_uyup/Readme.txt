@@ -80,7 +80,7 @@ GPIO_SetDebugPort() 释放后才能用作 SPI。
 
 ## 测试结果
 
-    13 PASS | 0 FAIL | 1 SKIP
+    13 PASS | 0 FAIL | 2 SKIP
 
     Auto Tests:
       [PASS] GPIO (LED + KEY)
@@ -97,7 +97,7 @@ GPIO_SetDebugPort() 释放后才能用作 SPI。
       [PASS] I2C EEPROM (AT24C64D write/read 8 bytes)
       [PASS] SPI Flash (W25Q32 JEDEC ID + sector erase + write/read)
       [SKIP] SDIO (no SD card inserted)
-      [PASS] WS2812B (RGB color sequence on 2 LEDs)
+      [SKIP] WS2812B (VDD=3.3V < 3.5V min spec — see note below)
 
     Ported DDL Examples:
       [PASS] DCU accumulator add
@@ -111,6 +111,25 @@ GPIO_SetDebugPort() 释放后才能用作 SPI。
       CAN (needs CAN bus peer)
       RS485 (needs RS485 slave)
       USB (needs USB host connection)
+
+### WS2812B 硬件限制说明
+
+WS2812B (XL-3528RGBW-WS2812B) 最低工作电压 VDD = 3.5V（数据手册），
+但本开发板通过 ME6211C33M5G LDO 供电 VDD = 3.3V，低于规格要求。
+
+**现象**: 数据信号可以到达 WS2812B（LED 从关闭变为亮起），但所有位都被
+解读为 "1"，导致 RGB 全亮 = 白色。无论软件时序如何调整（T0H 从 20ns
+到 385ns 逐项扫描），颜色均无变化。
+
+**已验证**:
+- PB1 GPIO 输出正确（PIDRB 回读验证）
+- DWT 周期计数器精确（2624 cycles/10µs @ 200MHz）
+- 5种 bit-bang 方案：volatile 循环、DWT -Og、DWT -O2、PWM+DMA、NOP 循环
+- 9种 T0H 时序配置（20ns 至 385ns）
+
+**修复方案**:
+1. 在 PB1 数据线上加 3.3V→5V 电平转换器
+2. 改为从 +5V_IN 给 WS2812B 供电（需硬件改造）
 
 ## 项目结构
 
