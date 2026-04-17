@@ -7,6 +7,8 @@ set(CMAKE_TOOLCHAIN_FILE
 
 project(bsp_test C ASM)
 
+set(CMAKE_EXPORT_COMPILE_COMMANDS ON)
+
 # ── Chip / board constants ───────────────────────────────────────────────────
 set(MCU         "cortex-m4"  CACHE STRING "MCU core")
 set(PYOCD_TARGET "hc32f460xe" CACHE STRING "pyOCD target name")
