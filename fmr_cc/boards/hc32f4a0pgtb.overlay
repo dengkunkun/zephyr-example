@@ -1,0 +1,54 @@
+/*
+ * SPDX-License-Identifier: Apache-2.0
+ *
+ * FMR_CC application overlay for hc32f4a0pgtb board.
+ * Enables USART1/2/5/6/7 with their pinctrl nodes defined in the board DTS.
+ * USART3 is already enabled as the console in the board DTS.
+ */
+
+/* IMU5115 - USART1, 115200 8N1 */
+&usart1 {
+	current-speed = <115200>;
+	pinctrl-0 = <&usart1_default>;
+	pinctrl-names = "default";
+	status = "okay";
+};
+
+/*
+ * WBUS/SBUS receiver - USART2.
+ * Wire protocol: 100000 baud, 8E2, signal-inverted (SBUS standard).
+ * TODO: The HC32 UART driver does not yet expose CR1.SBS (start-bit sense
+ * inversion), parity or 2-stop-bit DTS properties.  Set 115200 as a
+ * placeholder; wbus.c manually patches the USART registers at runtime via
+ * sys_write32() until the driver supports these properties.
+ */
+&usart2 {
+	current-speed = <115200>; /* placeholder; wbus.c patches to 100000 + SBS */
+	pinctrl-0 = <&usart2_default>;
+	pinctrl-names = "default";
+	status = "okay";
+};
+
+/* Lift RS485 - USART5, 115200 8N1 */
+&usart5 {
+	current-speed = <115200>;
+	pinctrl-0 = <&usart5_default>;
+	pinctrl-names = "default";
+	status = "okay";
+};
+
+/* Motor RS485 - USART6, 115200 8N1 */
+&usart6 {
+	current-speed = <115200>;
+	pinctrl-0 = <&usart6_default>;
+	pinctrl-names = "default";
+	status = "okay";
+};
+
+/* Servo RS485 - USART7, 115200 8N1 */
+&usart7 {
+	current-speed = <115200>;
+	pinctrl-0 = <&usart7_default>;
+	pinctrl-names = "default";
+	status = "okay";
+};

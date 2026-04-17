@@ -1,3 +1,13 @@
-build
-build.log
-.cache
+**/build
+**/build.log
+**/.cache
+*.o
+*.d
+*.elf
+**/__pycache__
+*.pyc
+
+HC32F460_DDL_Rev3.3.0
+HC32F4A0_DDL_Rev2.4.0
+f411ceu6_baremetal/STM32CubeF4 
+FMR_CC_SW

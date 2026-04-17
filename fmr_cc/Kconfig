@@ -1,0 +1,51 @@
+# SPDX-License-Identifier: Apache-2.0
+
+mainmenu "FMR_CC application"
+
+source "Kconfig.zephyr"
+
+menu "FMR_CC business modules"
+
+config APP_FMR_WBUS
+	bool "WBUS/SBUS receiver (USART2)"
+	default y
+
+config APP_FMR_IMU
+	bool "IMU-5115 parser (USART1)"
+	default y
+
+config APP_FMR_MOTO
+	bool "Motor Modbus RTU (USART6 + RS485)"
+	default y
+
+config APP_FMR_SERVO
+	bool "Feetech servo (USART7 + RS485)"
+	default y
+
+config APP_FMR_LIFT
+	bool "Lift Modbus RTU (USART5 + RS485)"
+	default y
+
+config APP_FMR_MANUAL_CTRL
+	bool "Manual control (WBUS->motor/servo/lift mapping)"
+	default y
+
+config APP_FMR_LED_595
+	bool "74HC595 LED status bit-bang"
+	default y
+
+config APP_FMR_BATTERY
+	bool "Battery ADC sampler"
+	default n
+	help
+	  Requires an ADC driver for HC32F4A0 which is not yet implemented.
+
+config APP_FMR_USB_UPLINK
+	bool "USB CDC-ACM uplink"
+	default n
+	help
+	  Requires an HC32F4A0 USB device controller driver which is not
+	  yet implemented.  When disabled the uplink falls back to USART3
+	  (the debug console).
+
+endmenu
