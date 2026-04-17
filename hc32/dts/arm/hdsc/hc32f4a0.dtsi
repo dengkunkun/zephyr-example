@@ -1,0 +1,301 @@
+/*
+ * SPDX-License-Identifier: Apache-2.0
+ *
+ * HC32F4A0 SoC devicetree include
+ *
+ * Memory map (HC32F4A0PGTB, LQFP100 / 2MB / 512KB SRAM):
+ *   Flash:     0x00000000, 2 MB
+ *   SRAMH:     0x1FFE0000, 128 KB (cache-able)
+ *   SRAM1:     0x20000000, 240 KB
+ *   SRAM2:     0x2003C000, 16 KB
+ *   SRAM3:     0x20040000, 108 KB
+ *   SRAM_RET:  0x200F0000, 4 KB
+ * This DTSI exposes a single general-purpose SRAM region (SRAM1+SRAM2+SRAM3,
+ * contiguous 364 KB starting at 0x20000000) for Zephyr. SRAMH and Ret-SRAM
+ * can be described by board overlays if needed.
+ */
+
+#include <arm/armv7-m.dtsi>
+#include <zephyr/dt-bindings/gpio/gpio.h>
+#include <mem.h>
+
+/ {
+	compatible = "hdsc,hc32f4a0";
+
+	chosen {
+		zephyr,flash-controller = &flash_controller;
+	};
+
+	cpus {
+		#address-cells = <1>;
+		#size-cells = <0>;
+		cpu0: cpu@0 {
+			device_type = "cpu";
+			compatible = "arm,cortex-m4f";
+			reg = <0>;
+			clock-frequency = <240000000>; /* HXT 8 MHz -> PLL 240 MHz */
+			cpu-power-states = <&runtime_idle &suspend_to_idle &suspend_to_ram>;
+		};
+	};
+
+	power-states {
+		runtime_idle: runtime-idle {
+			compatible = "zephyr,power-state";
+			power-state-name = "runtime-idle";
+			zephyr,pm-device-disabled;
+			min-residency-us = <0>;
+			exit-latency-us = <1>;
+		};
+
+		suspend_to_idle: suspend-to-idle {
+			compatible = "zephyr,power-state";
+			power-state-name = "suspend-to-idle";
+			zephyr,pm-device-disabled;
+			min-residency-us = <50>;
+			exit-latency-us = <10>;
+		};
+
+		suspend_to_ram: suspend-to-ram {
+			compatible = "zephyr,power-state";
+			power-state-name = "suspend-to-ram";
+			zephyr,pm-device-disabled;
+			min-residency-us = <1000>;
+			exit-latency-us = <200>;
+		};
+	};
+
+	pinctrl: pin-controller {
+		compatible = "hdsc,hc32-pinctrl";
+		status = "okay";
+	};
+
+	/* General-purpose SRAM: SRAM1 (240K) + SRAM2 (16K) + SRAM3 (108K)
+	 * are address-contiguous starting at 0x20000000 (HC32F4A0 RM §4.2).
+	 */
+	sram0: memory@20000000 {
+		compatible = "mmio-sram";
+		reg = <0x20000000 DT_SIZE_K(364)>;
+	};
+
+	soc {
+		clk: clock-controller@4004c400 {
+			compatible = "hdsc,hc32-clock";
+			reg = <0x4004C400 0x400>;
+			#clock-cells = <2>;
+			clock-frequency = <240000000>;
+			hxt-frequency = <8000000>;
+			lxt-frequency = <32768>;
+			mrc-frequency = <8000000>;
+			/* PLL: fvco = (HXT/M) * N = 8/1 * 60 = 480 MHz
+			 * sysclk = fvco / P = 480/2 = 240 MHz
+			 */
+			pll-m = <1>;
+			pll-n = <60>;
+			pll-p = <2>;
+			pll-q = <2>;
+			pll-r = <2>;
+			status = "okay";
+		};
+
+		flash_controller: flash-controller@40010400 {
+			compatible = "hdsc,hc32-flash-controller";
+			reg = <0x40010400 0x400>;
+			#address-cells = <1>;
+			#size-cells = <1>;
+
+			flash0: flash@0 {
+				compatible = "soc-nv-flash";
+				reg = <0x00000000 DT_SIZE_M(2)>;
+			};
+		};
+
+		gpioa: gpio@40053801 {
+			compatible = "hdsc,hc32-gpio";
+			reg = <0x40053800 0x800>;
+			gpio-controller;
+			#gpio-cells = <2>;
+			port-index = <0>;  /* Port A */
+			status = "disabled";
+		};
+
+		gpiob: gpio@40053802 {
+			compatible = "hdsc,hc32-gpio";
+			reg = <0x40053800 0x800>;
+			gpio-controller;
+			#gpio-cells = <2>;
+			port-index = <1>;  /* Port B */
+			status = "disabled";
+		};
+
+		gpioc: gpio@40053803 {
+			compatible = "hdsc,hc32-gpio";
+			reg = <0x40053800 0x800>;
+			gpio-controller;
+			#gpio-cells = <2>;
+			port-index = <2>;  /* Port C */
+			status = "disabled";
+		};
+
+		gpiod: gpio@40053804 {
+			compatible = "hdsc,hc32-gpio";
+			reg = <0x40053800 0x800>;
+			gpio-controller;
+			#gpio-cells = <2>;
+			port-index = <3>;  /* Port D */
+			status = "disabled";
+		};
+
+		gpioe: gpio@40053805 {
+			compatible = "hdsc,hc32-gpio";
+			reg = <0x40053800 0x800>;
+			gpio-controller;
+			#gpio-cells = <2>;
+			port-index = <4>;  /* Port E */
+			status = "disabled";
+		};
+
+		gpiof: gpio@40053806 {
+			compatible = "hdsc,hc32-gpio";
+			reg = <0x40053800 0x800>;
+			gpio-controller;
+			#gpio-cells = <2>;
+			port-index = <5>;
+			status = "disabled";
+		};
+
+		gpiog: gpio@40053807 {
+			compatible = "hdsc,hc32-gpio";
+			reg = <0x40053800 0x800>;
+			gpio-controller;
+			#gpio-cells = <2>;
+			port-index = <6>;
+			status = "disabled";
+		};
+
+		gpioh: gpio@40053808 {
+			compatible = "hdsc,hc32-gpio";
+			reg = <0x40053800 0x800>;
+			gpio-controller;
+			#gpio-cells = <2>;
+			port-index = <7>;
+			status = "disabled";
+		};
+
+		gpioi: gpio@40053809 {
+			compatible = "hdsc,hc32-gpio";
+			reg = <0x40053800 0x800>;
+			gpio-controller;
+			#gpio-cells = <2>;
+			port-index = <8>;
+			status = "disabled";
+		};
+
+		/* --- USARTs --- clocks=<&clk FCG_BUS FCG_BIT>
+		 * On HC32F4A0 USART1..USART10 are in FCG3, bits 20..29.
+		 */
+		usart1: serial@4001cc00 {
+			compatible = "hdsc,hc32-usart";
+			reg = <0x4001CC00 0x400>;
+			clocks = <&clk 3 20>;
+			status = "disabled";
+		};
+
+		usart2: serial@4001d000 {
+			compatible = "hdsc,hc32-usart";
+			reg = <0x4001D000 0x400>;
+			clocks = <&clk 3 21>;
+			status = "disabled";
+		};
+
+		usart3: serial@4001d400 {
+			compatible = "hdsc,hc32-usart";
+			reg = <0x4001D400 0x400>;
+			clocks = <&clk 3 22>;
+			status = "disabled";
+		};
+
+		usart4: serial@4001d800 {
+			compatible = "hdsc,hc32-usart";
+			reg = <0x4001D800 0x400>;
+			clocks = <&clk 3 23>;
+			status = "disabled";
+		};
+
+		usart5: serial@4001dc00 {
+			compatible = "hdsc,hc32-usart";
+			reg = <0x4001DC00 0x400>;
+			clocks = <&clk 3 24>;
+			status = "disabled";
+		};
+
+		usart6: serial@40020c00 {
+			compatible = "hdsc,hc32-usart";
+			reg = <0x40020C00 0x400>;
+			clocks = <&clk 3 25>;
+			status = "disabled";
+		};
+
+		usart7: serial@40021000 {
+			compatible = "hdsc,hc32-usart";
+			reg = <0x40021000 0x400>;
+			clocks = <&clk 3 26>;
+			status = "disabled";
+		};
+
+		usart8: serial@40021400 {
+			compatible = "hdsc,hc32-usart";
+			reg = <0x40021400 0x400>;
+			clocks = <&clk 3 27>;
+			status = "disabled";
+		};
+
+		usart9: serial@40021800 {
+			compatible = "hdsc,hc32-usart";
+			reg = <0x40021800 0x400>;
+			clocks = <&clk 3 28>;
+			status = "disabled";
+		};
+
+		usart10: serial@40021c00 {
+			compatible = "hdsc,hc32-usart";
+			reg = <0x40021C00 0x400>;
+			clocks = <&clk 3 29>;
+			status = "disabled";
+		};
+
+		wdt0: watchdog@40049000 {
+			compatible = "hdsc,hc32-wdt";
+			reg = <0x40049000 0x400>;
+			clocks = <&clk 0x15 0>;
+			interrupts = <24 1>;
+			int-src = <439>;
+			status = "disabled";
+		};
+
+		swdt0: watchdog@40049400 {
+			compatible = "hdsc,hc32-swdt";
+			reg = <0x40049400 0x400>;
+			interrupts = <25 1>;
+			int-src = <87>;
+			counter-cycles = <16384>;
+			clock-divider = <16>;
+			status = "disabled";
+		};
+
+		tmra1_counter: counter@4003a000 {
+			compatible = "hdsc,hc32-tmra-counter";
+			reg = <0x4003A000 0x400>;
+			clocks = <&clk 2 2>;
+			clock-prescaler = <1024>;
+			interrupts = <22 1>, <23 1>;
+			interrupt-names = "ovf", "cmp";
+			int-src-ovf = <256>;
+			int-src-cmp = <258>;
+			status = "disabled";
+		};
+	};
+};
+
+&nvic {
+	arm,num-irq-priority-bits = <4>;
+};

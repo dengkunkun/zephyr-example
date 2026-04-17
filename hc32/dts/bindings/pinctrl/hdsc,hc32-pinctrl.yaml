@@ -1,0 +1,23 @@
+# SPDX-License-Identifier: Apache-2.0
+
+title: HC32F460 pin controller
+
+description: |
+  HC32F460 pin control states are described as child nodes below the SoC-level
+  pinctrl node. Each state contains one or more groups, and each group provides
+  a list of encoded HC32 pinmux values in the `pinmux` property.
+
+compatible: "hdsc,hc32-pinctrl"
+
+include: base.yaml
+
+child-binding:
+  description: Pin control state container.
+  child-binding:
+    description: Group of pins sharing the same configuration flags.
+    include: pincfg-node.yaml
+    properties:
+      pinmux:
+        type: array
+        required: true
+        description: Encoded HC32 pinmux values.

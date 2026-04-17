@@ -1,0 +1,12 @@
+# SPDX-License-Identifier: Apache-2.0
+
+config COUNTER_HC32_TMRA
+	bool "HC32F460 TMRA counter"
+	default y
+	depends on DT_HAS_HDSC_HC32_TMRA_COUNTER_ENABLED
+	select COUNTER
+	select DYNAMIC_INTERRUPTS
+	help
+	  Enable the HC32F460 TMRA-based Zephyr counter driver.
+	  The first implementation targets TMRA1 in software-clock,
+	  sawtooth count-up mode with runtime top-value and alarm support.

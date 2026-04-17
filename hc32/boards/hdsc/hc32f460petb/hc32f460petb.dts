@@ -1,0 +1,115 @@
+/*
+ * SPDX-License-Identifier: Apache-2.0
+ *
+ * HC32F460PETB board devicetree
+ *
+ * Hardware:
+ *   LED3: PD10 (active-low)
+ *   LED4: PE15 (active-low)
+ *   BTN1: PE2  (active-low, internal pull-up)
+ *   USART1: PA9(TX)/PA10(RX), 115200, DAPLink VCP
+ */
+
+/dts-v1/;
+#include <arm/hdsc/hc32f460.dtsi>
+#include <zephyr/dt-bindings/input/input-event-codes.h>
+#include <zephyr/dt-bindings/pinctrl/hc32-pinctrl.h>
+
+/ {
+	model = "HC32F460PETB custom board";
+	compatible = "hdsc,hc32f460petb";
+
+	chosen {
+		zephyr,console = &usart1;
+		zephyr,shell-uart = &usart1;
+		zephyr,sram = &sram0;
+		zephyr,flash = &flash0;
+	};
+
+	leds: leds {
+		compatible = "gpio-leds";
+
+		led3: led_3 {
+			gpios = <&gpiod 10 GPIO_ACTIVE_LOW>;
+			label = "LED3";
+		};
+
+		led4: led_4 {
+			gpios = <&gpioe 15 GPIO_ACTIVE_LOW>;
+			label = "LED4";
+		};
+	};
+
+	gpio_keys {
+		compatible = "gpio-keys";
+
+		btn1: button_1 {
+			gpios = <&gpioe 2 (GPIO_ACTIVE_LOW | GPIO_PULL_UP)>;
+			label = "BTN1";
+			zephyr,code = <INPUT_KEY_0>;
+		};
+	};
+
+	aliases {
+		led0 = &led3;
+		led1 = &led4;
+		sw0 = &btn1;
+		counter0 = &tmra1_counter;
+		watchdog0 = &wdt0;
+		watchdog1 = &swdt0;
+		wwdg0 = &wdt0;
+		iwdg0 = &swdt0;
+	};
+};
+
+&pinctrl {
+	usart1_default: usart1_default {
+		group1 {
+			pinmux = <HC32_PINMUX(HC32_PORT_A, 9, HC32_FUNC_USART1_TX)>,
+				 <HC32_PINMUX(HC32_PORT_A, 10, HC32_FUNC_USART1_RX)>;
+			bias-pull-up;
+		};
+	};
+
+	usart1_sleep: usart1_sleep {
+		group1 {
+			pinmux = <HC32_PINMUX(HC32_PORT_A, 9, HC32_FUNC_GPIO)>,
+				 <HC32_PINMUX(HC32_PORT_A, 10, HC32_FUNC_GPIO)>;
+			bias-disable;
+		};
+	};
+};
+
+&gpioa {
+	status = "okay";
+};
+
+&gpiod {
+	status = "okay";
+};
+
+&gpioe {
+	status = "okay";
+};
+
+&usart1 {
+	current-speed = <115200>;
+	pinctrl-0 = <&usart1_default>;
+	pinctrl-1 = <&usart1_sleep>;
+	pinctrl-names = "default", "sleep";
+	status = "okay";
+};
+
+&tmra1_counter {
+	status = "okay";
+};
+
+&wdt0 {
+	status = "okay";
+};
+
+&swdt0 {
+	reset-on-timeout;
+	run-in-sleep;
+	status = "okay";
+};

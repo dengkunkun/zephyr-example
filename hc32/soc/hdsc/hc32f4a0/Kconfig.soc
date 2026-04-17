@@ -1,0 +1,26 @@
+# SPDX-License-Identifier: Apache-2.0
+# HC32F4A0 SoC family
+
+config SOC_FAMILY_HC32
+	bool
+
+config SOC_FAMILY
+	default "hc32" if SOC_FAMILY_HC32
+
+config SOC_HC32F4A0
+	bool
+	select SOC_FAMILY_HC32
+	select ARM
+	select CPU_CORTEX_M4
+	select CPU_CORTEX_M_HAS_DWT
+	select CPU_HAS_FPU
+	select CPU_HAS_ARM_MPU
+	select HAS_PM
+	select SOC_EARLY_INIT_HOOK
+	select HAS_SWO
+
+config SOC_SERIES
+	default "hc32f4a0" if SOC_HC32F4A0
+
+config SOC
+	default "hc32f4a0" if SOC_HC32F4A0

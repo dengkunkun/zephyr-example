@@ -1,0 +1,11 @@
+# SPDX-License-Identifier: Apache-2.0
+
+config GPIO_HC32
+	bool "HC32 GPIO driver"
+	default y
+	depends on DT_HAS_HDSC_HC32_GPIO_ENABLED
+	select DYNAMIC_INTERRUPTS
+	help
+	  GPIO driver for HC32F460 / HC32F4A0 SoC. Supports EXTINT external
+	  interrupts via INTC SEL routing; DYNAMIC_INTERRUPTS is required for
+	  runtime NVIC IRQ allocation.

@@ -1,0 +1,10 @@
+# SPDX-License-Identifier: Apache-2.0
+
+config PINCTRL_HC32
+	bool "HC32F460 pin control"
+	default y
+	depends on DT_HAS_HDSC_HC32_PINCTRL_ENABLED
+	select PINCTRL
+	help
+	  Enable the HC32F460 pinctrl implementation used by peripheral
+	  drivers to program PFSR/PCR state from devicetree pinctrl states.

@@ -1,0 +1,20 @@
+# SPDX-License-Identifier: Apache-2.0
+
+config WDT_HC32_WDT
+	bool "HC32F460 WDT window watchdog"
+	default y
+	depends on DT_HAS_HDSC_HC32_WDT_ENABLED
+	select WATCHDOG
+	help
+	  Enable the HC32F460 runtime-configurable WDT driver. This maps the
+	  PCLK3-based WDT block to Zephyr's watchdog API and supports contiguous
+	  refresh windows, reset mode, and interrupt mode with a callback.
+
+config WDT_HC32_SWDT
+	bool "HC32F460 SWDT independent watchdog"
+	default y
+	depends on DT_HAS_HDSC_HC32_SWDT_ENABLED
+	select WATCHDOG
+	help
+	  Enable the HC32F460 SWDT driver. The SWDT timeout is fixed by the ICG
+	  preload words at flash offset 0x400 and starts on the first feed.

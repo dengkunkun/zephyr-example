@@ -1,0 +1,156 @@
+/*
+ * SPDX-License-Identifier: Apache-2.0
+ *
+ * HC32F4A0PGTB FMR_CC Control Board
+ *
+ * Hardware map (from FMR_CC src/io.c):
+ *   USART1 IMU    : PD10(TX) PD11(RX)
+ *   USART2 WBUS   : PD9(TX)  PD8(RX)   100k 8E2 inverted SBUS
+ *   USART3 Debug  : PE15(TX) PE14(RX)  console
+ *   USART5 Lift485: PA11(TX) PA8(RX)   RE=PA9  DE=PA10
+ *   USART6 Motor  : PD7(TX)  PD4(RX)   RE=PD5  DE=PD6
+ *   USART7 Servo  : PE5(TX)  PE2(RX)   RE=PE3  DE=PE4
+ *   595 LED shift : SCK=PB9  RCK=PB8   DAT=PB7
+ *   Battery ADC   : PA0 (ADC1 CH0)
+ *   USB HS        : VBUS=PB13 DM=PB14 DP=PB15
+ */
+
+/dts-v1/;
+#include <arm/hdsc/hc32f4a0.dtsi>
+#include <zephyr/dt-bindings/input/input-event-codes.h>
+#include <zephyr/dt-bindings/pinctrl/hc32-pinctrl.h>
+
+/ {
+	model = "HC32F4A0PGTB FMR_CC Board";
+	compatible = "hdsc,hc32f4a0pgtb";
+
+	chosen {
+		zephyr,console = &usart3;
+		zephyr,shell-uart = &usart3;
+		zephyr,sram = &sram0;
+		zephyr,flash = &flash0;
+	};
+
+	aliases {
+		watchdog0 = &wdt0;
+		watchdog1 = &swdt0;
+	};
+
+	/* RS485 direction-control GPIOs (used by the app via gpio-leds-like
+	 * nodes or directly through DT_NODELABEL/GPIO_DT_SPEC_GET).
+	 */
+	rs485_ctrl: rs485-ctrl {
+		compatible = "gpio-leds";
+
+		lift_re: lift_re {
+			gpios = <&gpioa 9 GPIO_ACTIVE_HIGH>;
+			label = "LIFT_RE";
+		};
+		lift_de: lift_de {
+			gpios = <&gpioa 10 GPIO_ACTIVE_HIGH>;
+			label = "LIFT_DE";
+		};
+		moto_re: moto_re {
+			gpios = <&gpiod 5 GPIO_ACTIVE_HIGH>;
+			label = "MOTO_RE";
+		};
+		moto_de: moto_de {
+			gpios = <&gpiod 6 GPIO_ACTIVE_HIGH>;
+			label = "MOTO_DE";
+		};
+		servo_re: servo_re {
+			gpios = <&gpioe 3 GPIO_ACTIVE_HIGH>;
+			label = "SERVO_RE";
+		};
+		servo_de: servo_de {
+			gpios = <&gpioe 4 GPIO_ACTIVE_HIGH>;
+			label = "SERVO_DE";
+		};
+	};
+
+	/* 74HC595 LED shift-register: SCK=PB9, RCK=PB8, DAT=PB7 */
+	led_595: led-595 {
+		compatible = "gpio-leds";
+
+		led_sck: led_sck {
+			gpios = <&gpiob 9 GPIO_ACTIVE_HIGH>;
+			label = "LED595_SCK";
+		};
+		led_rck: led_rck {
+			gpios = <&gpiob 8 GPIO_ACTIVE_HIGH>;
+			label = "LED595_RCK";
+		};
+		led_dat: led_dat {
+			gpios = <&gpiob 7 GPIO_ACTIVE_HIGH>;
+			label = "LED595_DAT";
+		};
+	};
+};
+
+&pinctrl {
+	/* USART3 - Debug console: PE15 TX, PE14 RX */
+	usart3_default: usart3_default {
+		group1 {
+			pinmux = <HC32_PINMUX(HC32_PORT_E, 15, HC32_FUNC_USART3_TX)>,
+				 <HC32_PINMUX(HC32_PORT_E, 14, HC32_FUNC_USART3_RX)>;
+			bias-pull-up;
+		};
+	};
+
+	/* USART1 - IMU: PD10 TX, PD11 RX */
+	usart1_default: usart1_default {
+		group1 {
+			pinmux = <HC32_PINMUX(HC32_PORT_D, 10, HC32_FUNC_USART1_TX)>,
+				 <HC32_PINMUX(HC32_PORT_D, 11, HC32_FUNC_USART1_RX)>;
+			bias-pull-up;
+		};
+	};
+
+	/* USART2 - WBUS: PD9 TX, PD8 RX */
+	usart2_default: usart2_default {
+		group1 {
+			pinmux = <HC32_PINMUX(HC32_PORT_D, 9, HC32_FUNC_USART2_TX)>,
+				 <HC32_PINMUX(HC32_PORT_D, 8, HC32_FUNC_USART2_RX)>;
+			bias-pull-up;
+		};
+	};
+
+	/* USART5 - 485 Lift: PA11 TX, PA8 RX */
+	usart5_default: usart5_default {
+		group1 {
+			pinmux = <HC32_PINMUX(HC32_PORT_A, 11, HC32_FUNC_USART5_TX)>,
+				 <HC32_PINMUX(HC32_PORT_A, 8,  HC32_FUNC_USART5_RX)>;
+			bias-pull-up;
+		};
+	};
+
+	/* USART6 - Motor: PD7 TX, PD4 RX */
+	usart6_default: usart6_default {
+		group1 {
+			pinmux = <HC32_PINMUX(HC32_PORT_D, 7, HC32_FUNC_USART6_TX)>,
+				 <HC32_PINMUX(HC32_PORT_D, 4, HC32_FUNC_USART6_RX)>;
+			bias-pull-up;
+		};
+	};
+
+	/* USART7 - Servo: PE5 TX, PE2 RX */
+	usart7_default: usart7_default {
+		group1 {
+			pinmux = <HC32_PINMUX(HC32_PORT_E, 5, HC32_FUNC_USART7_TX)>,
+				 <HC32_PINMUX(HC32_PORT_E, 2, HC32_FUNC_USART7_RX)>;
+			bias-pull-up;
+		};
+	};
+};
+
+&gpioa { status = "okay"; };
+&gpiob { status = "okay"; };
+&gpiod { status = "okay"; };
+&gpioe { status = "okay"; };
+
+&usart3 {
+	current-speed = <115200>;
+	pinctrl-0 = <&usart3_default>;
+	pinctrl-names = "default";
+	status = "okay";
+};

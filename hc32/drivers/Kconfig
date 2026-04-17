@@ -1,0 +1,9 @@
+# SPDX-License-Identifier: Apache-2.0
+
+rsource "clock_control/Kconfig"
+rsource "counter/Kconfig"
+rsource "gpio/Kconfig"
+rsource "pinctrl/Kconfig"
+rsource "serial/Kconfig"
+rsource "watchdog/Kconfig"
+rsource "watchdog/Kconfig"

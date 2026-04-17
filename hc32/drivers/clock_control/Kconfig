@@ -1,0 +1,11 @@
+# SPDX-License-Identifier: Apache-2.0
+
+config CLOCK_CONTROL_HC32
+	bool "HC32F460 clock controller"
+	default y
+	depends on DT_HAS_HDSC_HC32_CLOCK_ENABLED
+	select CLOCK_CONTROL
+	help
+	  Enable the HC32F460 clock controller. This driver programs the
+	  board's HXT 8 MHz -> PLL 200 MHz default clock tree and exposes
+	  FCG peripheral gate control plus runtime bus-rate queries.

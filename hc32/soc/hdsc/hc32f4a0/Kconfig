@@ -1,0 +1,8 @@
+# SPDX-License-Identifier: Apache-2.0
+
+config SOC_FAMILY_HC32
+	select BUILD_OUTPUT_HEX
+
+# Source out-of-tree driver Kconfig files (only the active SoC's Kconfig is
+# sourced by Zephyr, so this is not a duplicate of the F460 Kconfig).
+rsource "../../../drivers/Kconfig"

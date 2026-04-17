@@ -1,8 +1,0 @@
-# SPDX-License-Identifier: Apache-2.0
-
-config GPIO_HC32
-	bool "HC32F460 GPIO driver"
-	default y
-	depends on DT_HAS_HDSC_HC32_GPIO_ENABLED
-	help
-	  GPIO driver for HC32F460 SoC.

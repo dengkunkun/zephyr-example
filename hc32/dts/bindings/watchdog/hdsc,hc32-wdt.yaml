@@ -1,0 +1,22 @@
+# SPDX-License-Identifier: Apache-2.0
+
+description: HC32F460 runtime-configurable window watchdog
+
+compatible: "hdsc,hc32-wdt"
+
+include: base.yaml
+
+properties:
+  reg:
+    required: true
+
+  clocks:
+    required: true
+
+  interrupts:
+    required: true
+
+  int-src:
+    type: int
+    required: true
+    description: HC32 INTC peripheral interrupt source number.

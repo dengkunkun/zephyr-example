@@ -1,0 +1,39 @@
+# SPDX-License-Identifier: Apache-2.0
+
+description: HC32F460 ICG-configured special watchdog
+
+compatible: "hdsc,hc32-swdt"
+
+include: base.yaml
+
+properties:
+  reg:
+    required: true
+
+  interrupts:
+    required: true
+
+  int-src:
+    type: int
+    required: true
+    description: HC32 INTC peripheral interrupt source number.
+
+  counter-cycles:
+    type: int
+    required: true
+    enum: [256, 4096, 16384, 65536]
+    description: Fixed SWDT counter reload value programmed into ICG.
+
+  clock-divider:
+    type: int
+    required: true
+    enum: [1, 16, 32, 64, 128, 256, 2048]
+    description: Fixed SWDT divider programmed into ICG.
+
+  reset-on-timeout:
+    type: boolean
+    description: Use reset mode instead of interrupt mode.
+
+  run-in-sleep:
+    type: boolean
+    description: Continue counting in sleep/stop mode.

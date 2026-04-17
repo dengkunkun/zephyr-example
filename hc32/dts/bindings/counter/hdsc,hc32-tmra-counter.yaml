@@ -1,0 +1,47 @@
+# SPDX-License-Identifier: Apache-2.0
+
+description: HC32F460 TMRA counter
+
+compatible: "hdsc,hc32-tmra-counter"
+
+include: base.yaml
+
+properties:
+  reg:
+    required: true
+
+  clocks:
+    required: true
+
+  interrupts:
+    required: true
+
+  interrupt-names:
+    required: true
+
+  clock-prescaler:
+    type: int
+    required: true
+    enum:
+      - 1
+      - 2
+      - 4
+      - 8
+      - 16
+      - 32
+      - 64
+      - 128
+      - 256
+      - 512
+      - 1024
+    description: TMRA software clock divider applied to PCLK1.
+
+  int-src-ovf:
+    type: int
+    required: true
+    description: HC32 INTC source number routed to the overflow IRQ.
+
+  int-src-cmp:
+    type: int
+    required: true
+    description: HC32 INTC source number routed to the compare IRQ.

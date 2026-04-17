@@ -1,0 +1,6 @@
+board:
+  name: hc32f4a0pgtb
+  full_name: HC32F4A0PGTB FMR_CC Control Board
+  vendor: hdsc
+  socs:
+    - name: hc32f4a0

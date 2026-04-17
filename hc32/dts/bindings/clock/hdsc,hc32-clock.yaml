@@ -1,0 +1,58 @@
+# SPDX-License-Identifier: Apache-2.0
+
+description: HC32F460 clock controller
+
+compatible: "hdsc,hc32-clock"
+
+include: [base.yaml, clock-controller.yaml]
+
+properties:
+  reg:
+    required: true
+
+  "#clock-cells":
+    const: 2
+
+  clock-frequency:
+    type: int
+    required: true
+    description: Default system clock frequency after initialization.
+
+  hxt-frequency:
+    type: int
+    required: true
+    description: External high-speed crystal frequency in Hz.
+
+  lxt-frequency:
+    type: int
+    default: 32768
+    description: External low-speed crystal frequency in Hz.
+
+  mrc-frequency:
+    type: int
+    default: 8000000
+    description: Internal medium-speed RC frequency in Hz.
+
+  pll-m:
+    type: int
+    required: true
+
+  pll-n:
+    type: int
+    required: true
+
+  pll-p:
+    type: int
+    required: true
+
+  pll-q:
+    type: int
+    required: true
+
+  pll-r:
+    type: int
+    required: true
+
+clock-cells:
+  - bus
+  - bit
