@@ -1,0 +1,48 @@
+set(CMAKE_SYSTEM_NAME       Generic)
+set(CMAKE_SYSTEM_PROCESSOR  arm)
+
+# Try to find a working ARM cross-compiler prefix:
+# 1. User-supplied CROSS_COMPILE or ARM_TOOLCHAIN_PREFIX
+# 2. arm-none-eabi- (standard)
+# 3. Zephyr SDK arm-zephyr-eabi-
+if(DEFINED ENV{CROSS_COMPILE})
+    set(_prefix $ENV{CROSS_COMPILE})
+elseif(DEFINED ENV{ARM_TOOLCHAIN_PREFIX})
+    set(_prefix $ENV{ARM_TOOLCHAIN_PREFIX})
+else()
+    find_program(_gcc_std arm-none-eabi-gcc)
+    if(_gcc_std)
+        set(_prefix "arm-none-eabi-")
+    else()
+        # Search Zephyr SDK
+        if(DEFINED ENV{ZEPHYR_SDK_INSTALL_DIR})
+            set(_zsdk $ENV{ZEPHYR_SDK_INSTALL_DIR})
+        else()
+            file(GLOB _zsdk_dirs "$ENV{HOME}/zephyr-sdk-*")
+            list(SORT _zsdk_dirs ORDER DESCENDING)
+            if(_zsdk_dirs)
+                list(GET _zsdk_dirs 0 _zsdk)
+            endif()
+        endif()
+        if(_zsdk)
+            set(_prefix "${_zsdk}/gnu/arm-zephyr-eabi/bin/arm-zephyr-eabi-")
+            message(STATUS "Using Zephyr SDK: ${_zsdk}")
+        else()
+            set(_prefix "arm-none-eabi-")
+        endif()
+    endif()
+endif()
+
+set(CMAKE_C_COMPILER   "${_prefix}gcc")
+set(CMAKE_ASM_COMPILER "${_prefix}gcc")
+set(CMAKE_OBJCOPY      "${_prefix}objcopy")
+set(CMAKE_OBJDUMP      "${_prefix}objdump")
+set(CMAKE_SIZE         "${_prefix}size")
+set(CMAKE_GDB          "${_prefix}gdb")
+
+set(CMAKE_TRY_COMPILE_TARGET_TYPE STATIC_LIBRARY)
+
+set(CMAKE_FIND_ROOT_PATH_MODE_PROGRAM NEVER)
+set(CMAKE_FIND_ROOT_PATH_MODE_LIBRARY ONLY)
+set(CMAKE_FIND_ROOT_PATH_MODE_INCLUDE ONLY)
+set(CMAKE_FIND_ROOT_PATH_MODE_PACKAGE ONLY)
